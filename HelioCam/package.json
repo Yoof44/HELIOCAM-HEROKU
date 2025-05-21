@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@tailwindcss/cli": "^4.0.6",
+    "firebase": "^11.4.0",
+    "peer": "^1.0.2",
+    "simple": "^0.2.0",
+    "tailwindcss": "^4.0.6",
+    "uuid": "^11.1.0"
+  },
+  "name": "heliocam",
+  "version": "1.0.0",
+  "description": "CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure. More information can be found at the [official site](https://codeigniter.com).",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "daisyui": "^4.12.23",
+    "nodemon": "^3.1.9"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
