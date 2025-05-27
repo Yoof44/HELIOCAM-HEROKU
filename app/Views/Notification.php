@@ -128,7 +128,7 @@
         <script type="module" src="<?= base_url('/assets/firebase_auth/login_status.js'); ?>"></script>
         <script type="module" src="<?= base_url('/assets/firebase_auth/verification_status.js'); ?>"></script>
         
-        <!-- Update this line to point to your notification init script -->
+        <!-- Update this line to point to your notification init script  -->
         <script type="module" src="<?= base_url('/assets/firebase_notif/notification-init.js'); ?>"></script>
     </body>
 </html>
