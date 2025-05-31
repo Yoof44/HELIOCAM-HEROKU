@@ -89,35 +89,27 @@ async function storeLoginInfo(user) {
     );
 }
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, (user) => {
     if (user) {
-        await user.reload();  // refresh user data (emailVerified)
+        console.log("User is logged in:", user.email);
+        storeLoginInfo(user);
 
-        if (!user.emailVerified) {
-            console.log("User email not verified. Redirecting to /verify");
-            if (window.location.pathname !== "/verify" && window.location.pathname !== "/verify.php") {
-                window.location.href = "/verify"; 
-            }
-            return;
-        }
-
-        // User is verified
-        console.log("User is logged in and verified");
-        if (window.location.pathname !== "/home" && window.location.pathname !== "/home.php") {
-            window.location.href = "/home";  
+        if (["/", "/register", "/verify", "/forgot_pass"].includes(window.location.pathname)) {
+            window.location.href = "/home";
         }
     } else {
-        console.log("No user logged in");
+        console.log("User is not logged in");
+        if (!["/", "/register", "/forgot_pass"].includes(window.location.pathname)) {
+            window.location.href = "/";
+        }
+    }
 
-        // Retry after short delay to wait for auth state to initialize
-        setTimeout(() => {
-            if (!auth.currentUser) {
-                console.log("Still no user logged in after delay - redirect to login page");
-                if (window.location.pathname !== "/login" && window.location.pathname !== "/login.php") {
-                    window.location.href = "/login";
-                }
-            }
-        }, 2000);
+    if (user && !user.emailVerified) {
+        console.log("User email not verified. Redirecting to /verify");
+        if (window.location.pathname !== "/verify") {
+            window.location.href = "/verify";
+        }
+    } else if (user && window.location.pathname === "/verify") {
+        window.location.href = "/home";
     }
 });
-
