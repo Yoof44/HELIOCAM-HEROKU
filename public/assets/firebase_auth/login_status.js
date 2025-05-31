@@ -89,12 +89,24 @@ async function storeLoginInfo(user) {
     );
 }
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
+        // Refresh user data to get the latest info
+        await user.reload();
+
         console.log("User is logged in:", user.email);
         storeLoginInfo(user);
 
         if (["/", "/register", "/verify", "/forgot_pass"].includes(window.location.pathname)) {
+            window.location.href = "/home";
+        }
+
+        if (!user.emailVerified) {
+            console.log("User email not verified. Redirecting to /verify");
+            if (window.location.pathname !== "/verify") {
+                window.location.href = "/verify";
+            }
+        } else if (window.location.pathname === "/verify") {
             window.location.href = "/home";
         }
     } else {
@@ -102,14 +114,5 @@ onAuthStateChanged(auth, (user) => {
         if (!["/", "/register", "/forgot_pass"].includes(window.location.pathname)) {
             window.location.href = "/";
         }
-    }
-
-    if (user && !user.emailVerified) {
-        console.log("User email not verified. Redirecting to /verify");
-        if (window.location.pathname !== "/verify") {
-            window.location.href = "/verify";
-        }
-    } else if (user && window.location.pathname === "/verify") {
-        window.location.href = "/home";
     }
 });
