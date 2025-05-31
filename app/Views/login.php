@@ -36,7 +36,7 @@
                 <!-- Left side - Brand Content -->
                 <div class="bg-[#FF8C42] md:w-2/5 p-8 flex flex-col justify-center text-white">
                     <div class="mb-8">
-                        <h1 class="text-4xl font-bold mb-2">Helio<span class="text-gray-800">Cam</span></h1>
+                        <h1 class="text-4xl font-bold mb-2">Paris Texas<span class="text-gray-800">Cam</span></h1>
                         <h2 class="text-xl font-light">See your future for better security</h2>
                     </div>
                     <div class="hidden md:block">
