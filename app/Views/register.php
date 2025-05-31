@@ -200,12 +200,11 @@
         </footer>
 
     <!-- Scripts -->
-    <script src="public/assets/js/bootstrap.js"></script>
+    <script type = "module" src="<?= base_url('/assets/js/bootstrap.js'); ?>"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <script type="module" src="<?= base_url('/assets/firebase_auth/register_user.js'); ?>"></script>
     <script type="module" src="<?= base_url('/assets/firebase_auth/login_status.js'); ?>"></script>
-    <script type="module" src="<?= base_url('/assets/firebase_auth/verification_status.js'); ?>"></script>
 </body>
 </html>

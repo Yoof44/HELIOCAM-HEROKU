@@ -63,6 +63,7 @@
 </body>
 
 <script src = "public/assets/js/bootstrap.js"></script>
+<script type = "module" src="<?= base_url('/assets/js/bootstrap.js'); ?>"></script>
 
 <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
 <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
