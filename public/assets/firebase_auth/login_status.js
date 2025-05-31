@@ -1,7 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyB5IBiji1ZVN5Sx3ae7xj_3xY0WNLTW7gg",
@@ -92,39 +91,18 @@ async function storeLoginInfo(user) {
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        try {
-            // Try to reload user info from Firebase backend
-            await user.reload();
-
-            // Now check verification and redirect logic:
-            console.log("User is logged in:", user.email);
-            storeLoginInfo(user);
-
-            if (!user.emailVerified) {
-                console.log("User email not verified. Redirecting to /verify");
-                if (window.location.pathname !== "/verify") {
-                    window.location.href = "/verify";
-                }
-                return; // stop further checks so no conflicting redirects
-            }
-
-            // If user is verified and on certain pages, redirect home
-            if (["/", "/register", "/verify", "/forgot_pass"].includes(window.location.pathname)) {
-                window.location.href = "/home";
-            } else if (window.location.pathname === "/verify") {
-                window.location.href = "/home";
-            }
-
-        } catch (error) {
-            // If reload failed, user probably deleted or invalid → sign out
-            console.warn("User session invalid, signing out.", error);
-            await signOut(auth);
-            window.location.href = "/";
+        await user.reload();  // make sure we get updated emailVerified status
+        if (!user.emailVerified) {
+            console.log("User email not verified. Redirecting to /verify");
+            window.location.href = "/verify"; 
+            return;
         }
+
+        // If user is verified, then proceed with "User is logged in" redirect
+        console.log("User is logged in");
+        window.location.href = "/home";  // or wherever logged-in users go
     } else {
-        console.log("User is not logged in");
-        if (!["/", "/register", "/forgot_pass"].includes(window.location.pathname)) {
-            window.location.href = "/";
-        }
+        console.log("No user logged in");
+        // optionally stay on page or redirect to login
     }
 });
