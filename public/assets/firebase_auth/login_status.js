@@ -91,18 +91,33 @@ async function storeLoginInfo(user) {
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        await user.reload();  // make sure we get updated emailVerified status
+        await user.reload();  // refresh user data (emailVerified)
+
         if (!user.emailVerified) {
             console.log("User email not verified. Redirecting to /verify");
-            window.location.href = "/verify"; 
+            if (window.location.pathname !== "/verify" && window.location.pathname !== "/verify.php") {
+                window.location.href = "/verify"; 
+            }
             return;
         }
 
-        // If user is verified, then proceed with "User is logged in" redirect
-        console.log("User is logged in");
-        window.location.href = "/home";  // or wherever logged-in users go
+        // User is verified
+        console.log("User is logged in and verified");
+        if (window.location.pathname !== "/home" && window.location.pathname !== "/home.php") {
+            window.location.href = "/home";  
+        }
     } else {
         console.log("No user logged in");
-        // optionally stay on page or redirect to login
+
+        // Retry after short delay to wait for auth state to initialize
+        setTimeout(() => {
+            if (!auth.currentUser) {
+                console.log("Still no user logged in after delay - redirect to login page");
+                if (window.location.pathname !== "/login" && window.location.pathname !== "/login.php") {
+                    window.location.href = "/login";
+                }
+            }
+        }, 2000);
     }
 });
+
