@@ -1,14 +1,14 @@
+@ -1,73 +0,0 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <meta charset="utf-8">
 <head>
         
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="/assets/css/style.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         <link rel="shortcut icon" type="image/ico" href="public/assets/css/Helio-Logo.ico">
-        <link rel="stylesheet" href="./output.css">
-        <link rel="stylesheet" href="public/assets/css/bootstrap.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 
@@ -36,28 +36,29 @@
 
 
 
-<footer>
-        <p>© 2025 HelioCam. All Rights Reserved.</p> 
-        <div>
-        <p class="made">Made with 
-         | <a href="">Summersoft</a></p>
-        <p>Follow us:</p>
-        <ul class="flex list-none">
-        <li><a href="">
-        <i class="fab fa-facebook text-orange-300 text-2xl"></i>
-        </li></a>
-        <li><a href="">
-        <i class="fab fa-instagram text-orange-300 text-2xl"></i>
-        </li></a>
-        <li><a href="">
-        <i class="fab fa-twitter text-orange-300 text-2xl"></i>
-        </li></a>
-        <li><a href="">
-        <i class="fab fa-linkedin text-orange-300 text-2xl"></i>
-        </li></a>
-        </ul> 
-        </div>
-</footer>
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-[#FF8C42] to-[#FF9A5A] text-white py-6 px-4 bottom-0 z-1">
+            <div class="container mx-auto max-w-4xl">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <!-- Left side content -->
+                    <div class="self-start md:self-center mb-4 md:mb-0">
+                        <p class="mb-1">&copy; 2025 HelioCam. All Rights Reserved.</p>
+                        <p class="text-xs">Made with <span class="text-red-300">♥</span> | <a href="" class="text-white hover:underline">Summersoft</a></p>
+                    </div>
+                    
+                    <!-- Right side content -->
+                    <div class="self-end md:self-center">
+                        <p class="text-sm mb-2 text-right">Follow us:</p>
+                        <ul class="flex justify-end space-x-4">
+                            <li><a href="" class="text-xl text-white hover:text-orange-200 transition"><i class="fab fa-facebook"></i></a></li>
+                            <li><a href="" class="text-xl text-white hover:text-orange-200 transition"><i class="fab fa-instagram"></i></a></li>
+                            <li><a href="" class="text-xl text-white hover:text-orange-200 transition"><i class="fab fa-twitter"></i></a></li>
+                            <li><a href="" class="text-xl text-white hover:text-orange-200 transition"><i class="fab fa-linkedin"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
 
 </body>
 
