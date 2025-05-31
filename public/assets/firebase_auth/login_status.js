@@ -92,31 +92,31 @@ async function storeLoginInfo(user) {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         await user.reload();
-    
+
         console.log("User is logged in:", user.email);
         storeLoginInfo(user);
-    
+
         if (!user.emailVerified) {
-            // Only redirect to /verify if not already there
+            // Redirect to /verify if not already there
             if (window.location.pathname !== "/verify") {
                 console.log("User email not verified. Redirecting to /verify");
                 window.location.href = "/verify";
             }
         } else {
             // User is verified
-            // Redirect away from /verify to /home
-            if (window.location.pathname === "/verify") {
-                window.location.href = "/home";
-            } else if (["/", "/register", "/forgot_pass"].includes(window.location.pathname)) {
-                // If verified user is on auth pages, send to /home
+            // If on /verify or any auth page, redirect to /home
+            if (
+                window.location.pathname === "/verify" ||
+                ["/", "/register", "/forgot_pass"].includes(window.location.pathname)
+            ) {
                 window.location.href = "/home";
             }
         }
     } else {
         console.log("User is not logged in");
+        // If not on an auth page, redirect to /
         if (!["/", "/register", "/forgot_pass"].includes(window.location.pathname)) {
             window.location.href = "/";
         }
     }
-    
 });
