@@ -131,35 +131,40 @@ onAuthStateChanged(auth, async (user) => {
         } else { // User IS emailVerified
             sessionStorage.removeItem('justRegistered'); // Clean up flag if it exists
 
-            // Paths that, if a verified user lands on them, should trigger a redirect to homePath.
-            // The login page (root "/") is NOT in this list.
-            const authPagesToLeaveWhenVerifiedSuffixes = [
-                registerPathSuffix, registerPhpPathSuffix,
-                forgotPassPathSuffix, forgotPassPhpPathSuffix,
-                verifyPathSuffix, verifyPhpPathSuffix
-            ];
+            // Check if user is on the login page
+            if (currentPath.endsWith(loginPathSuffix) && currentPath === loginPathSuffix) { // currentPath is typically "/"
+                console.log(`Login_status.js: User verified. On login page (${currentPath}). Redirecting to ${homePath}.`);
+                window.location.href = homePath;
+            } else {
+                // User is verified and NOT on the login page.
+                // Now check if they are on other auth pages that should trigger a redirect to homePath.
+                const authPagesToLeaveWhenVerifiedSuffixes = [
+                    registerPathSuffix, registerPhpPathSuffix,
+                    forgotPassPathSuffix, forgotPassPhpPathSuffix,
+                    verifyPathSuffix, verifyPhpPathSuffix
+                ];
 
-            let redirectToHome = false;
-            for (const pathSuffix of authPagesToLeaveWhenVerifiedSuffixes) {
-                if (currentPath.endsWith(pathSuffix)) {
-                    // Ensure it's not just a partial match if paths are like /path and /path-something
-                    // This check is basic; for complex routing, more robust checks might be needed.
-                    if (currentPath === pathSuffix || currentPath.endsWith(pathSuffix)) {
-                         redirectToHome = true;
-                         break;
+                let onAuthPageToLeave = false;
+                for (const pathSuffix of authPagesToLeaveWhenVerifiedSuffixes) {
+                    if (currentPath.endsWith(pathSuffix)) {
+                        // Ensure it's not just a partial match if paths are like /path and /path-something
+                        // This check is basic; for complex routing, more robust checks might be needed.
+                        if (currentPath === pathSuffix || currentPath.endsWith(pathSuffix)) {
+                            onAuthPageToLeave = true;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (redirectToHome) {
-                console.log(`Login_status.js: User verified. On auth page ${currentPath}. Redirecting to ${homePath}.`);
-                window.location.href = homePath;
-            } else if (currentPath.endsWith(loginPathSuffix) && currentPath === loginPathSuffix) { // Explicitly check for the root/login page
-                // User is verified and on the login page. They must log in manually.
-                console.log(`Login_status.js: User verified. On login page (${currentPath}). Staying.`);
-                // login_user.js will handle the actual login and then redirect to homePath.
+                if (onAuthPageToLeave) {
+                    console.log(`Login_status.js: User verified. On auth page ${currentPath}. Redirecting to ${homePath}.`);
+                    window.location.href = homePath;
+                } else {
+                    // User is verified, not on login page, and not on other redirect-triggering auth pages.
+                    // So, they are on a page like /home, /profile, etc. They should stay.
+                    console.log(`Login_status.js: User verified. On page ${currentPath}. Staying.`);
+                }
             }
-            // If user is verified and on any other page (e.g., already on /home, or /profile), they stay.
         }
     } else { // User is not logged in
         sessionStorage.removeItem('justRegistered'); // Clean up flag
