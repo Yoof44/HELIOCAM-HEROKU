@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <meta charset="utf-8">
@@ -64,11 +63,10 @@
 
 <script src = "public/assets/js/bootstrap.js"></script>
 
-<script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
 
-<script type = "module" src="<?= base_url('/assets/firebase_auth/register_user.js'); ?>"></script>
 <script type = "module" src = "<?= base_url('/assets/firebase_auth/login_status.js'); ?>"></script>
 <script type = "module" src = "<?= base_url('/assets/firebase_auth/logout.js'); ?>"></script>
 </html>

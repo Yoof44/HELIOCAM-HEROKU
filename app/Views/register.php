@@ -36,7 +36,7 @@
                 <!-- Left side - Brand Content -->
                 <div class="bg-[#FF8C42] md:w-2/5 p-8 flex flex-col justify-center text-white">
                     <div class="mb-8">
-                        <h1 class="text-4xl font-bold mb-2">Helio<span class="text-gray-800">Cam</span></h1>
+                        <h1 class="text-4xl font-bold mb-2">Hello<span class="text-gray-800">Cam</span></h1>
                         <h2 class="text-xl font-light">See your future for better security</h2>
                     </div>
                     <div class="hidden md:block">
@@ -53,6 +53,8 @@
                         <h2 class="text-3xl font-semibold text-gray-800">Create Account</h2>
                         <p class="text-gray-500 mt-2">Please fill in your details to register</p>
                     </div>
+
+                    <div id="registrationMessage" class="mb-4 text-sm"></div>
 
                     <form class="space-y-4">
                         <div>
@@ -158,7 +160,7 @@
                         </div>
                         
                         <div class="pt-2">
-                            <button type="submit" id="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-lg transition transform hover:-translate-y-0.5 flex items-center justify-center">
+                            <button type="button" id="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-lg transition transform hover:-translate-y-0.5 flex items-center justify-center">
                                 <span id="loginText">Register</span>
                                 <span id="spinner" class="spinner" style="display: none;"></span>
                             </button>
@@ -201,9 +203,9 @@
 
     <!-- Scripts -->
     <script type = "module" src="<?= base_url('/assets/js/bootstrap.js'); ?>"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
     <script type="module" src="<?= base_url('/assets/firebase_auth/register_user.js'); ?>"></script>
     <script type="module" src="<?= base_url('/assets/firebase_auth/login_status.js'); ?>"></script>
     

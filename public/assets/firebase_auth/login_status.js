@@ -1,6 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyB5IBiji1ZVN5Sx3ae7xj_3xY0WNLTW7gg",
@@ -90,33 +90,108 @@ async function storeLoginInfo(user) {
 }
 
 onAuthStateChanged(auth, async (user) => {
+    // Define path suffixes at the beginning of the function scope
+    const loginPathSuffix = "/"; // Assuming root is login
+    const registerPathSuffix = "/register";
+    const registerPhpPathSuffix = "/register.php";
+    const forgotPassPathSuffix = "/forgot_pass";
+    const forgotPassPhpPathSuffix = "/forgot_pass.php";
+    const verifyPathSuffix = "/verify";
+    const verifyPhpPathSuffix = "/verify.php";
+    const homePath = "/home";
+
     if (user) {
         await user.reload();
-
-        console.log("User is logged in:", user.email);
         storeLoginInfo(user);
 
+        const justRegistered = sessionStorage.getItem('justRegistered');
+        const currentPath = window.location.pathname;
+
+        // Check if on the registration page (for the "just registered" scenario)
+        const onRegisterPage = currentPath.endsWith(registerPathSuffix) || 
+                             currentPath.endsWith(registerPhpPathSuffix) || 
+                             (currentPath.endsWith(loginPathSuffix) && justRegistered && currentPath === loginPathSuffix);
+
+
         if (!user.emailVerified) {
-            // Redirect to /verify if not already there
-            if (window.location.pathname !== "/verify") {
-                console.log("User email not verified. Redirecting to /verify");
-                window.location.href = "/verify";
+            if (justRegistered && onRegisterPage) {
+                // User just registered and is on the registration page.
+                // register_user.js has displayed its message. Do not redirect.
+                console.log("Login_status.js: User just registered, email not verified. Staying on current page to show registration message.");
+                sessionStorage.removeItem('justRegistered'); // Clear the flag
+            } else {
+                // User is logged in, email not verified, and it's NOT the "just registered on register page" scenario.
+                // Per user request, do not redirect to /verify.php or any verification page.
+                // They remain on the current page.
+                // A site-wide banner for "email not verified" could be implemented separately if needed.
+                if (!currentPath.endsWith(verifyPathSuffix) && !currentPath.endsWith(verifyPhpPathSuffix)) {
+                    console.log(`Login_status.js: User logged in, email not verified (${user.email}). Current page: ${currentPath}. Not redirecting to a verify page.`);
+                }
             }
+        } else { // User IS emailVerified
+            sessionStorage.removeItem('justRegistered'); // Clean up flag if it exists
+
+            // Paths that, if a verified user lands on them, should trigger a redirect to homePath.
+            // The login page (root "/") is NOT in this list.
+            const authPagesToLeaveWhenVerifiedSuffixes = [
+                registerPathSuffix, registerPhpPathSuffix,
+                forgotPassPathSuffix, forgotPassPhpPathSuffix,
+                verifyPathSuffix, verifyPhpPathSuffix
+            ];
+
+            let redirectToHome = false;
+            for (const pathSuffix of authPagesToLeaveWhenVerifiedSuffixes) {
+                if (currentPath.endsWith(pathSuffix)) {
+                    // Ensure it's not just a partial match if paths are like /path and /path-something
+                    // This check is basic; for complex routing, more robust checks might be needed.
+                    if (currentPath === pathSuffix || currentPath.endsWith(pathSuffix)) {
+                         redirectToHome = true;
+                         break;
+                    }
+                }
+            }
+
+            if (redirectToHome) {
+                console.log(`Login_status.js: User verified. On auth page ${currentPath}. Redirecting to ${homePath}.`);
+                window.location.href = homePath;
+            } else if (currentPath.endsWith(loginPathSuffix) && currentPath === loginPathSuffix) { // Explicitly check for the root/login page
+                // User is verified and on the login page. They must log in manually.
+                console.log(`Login_status.js: User verified. On login page (${currentPath}). Staying.`);
+                // login_user.js will handle the actual login and then redirect to homePath.
+            }
+            // If user is verified and on any other page (e.g., already on /home, or /profile), they stay.
+        }
+    } else { // User is not logged in
+        sessionStorage.removeItem('justRegistered'); // Clean up flag
+
+        const currentPath = window.location.pathname;
+
+        // Allowed guest page suffixes (user can be on these if not logged in)
+        const allowedGuestSuffixes = [
+            registerPathSuffix, registerPhpPathSuffix,
+            forgotPassPathSuffix, forgotPassPhpPathSuffix,
+            verifyPathSuffix, verifyPhpPathSuffix
+            // loginPathSuffix ("/") is handled by an explicit check below
+        ];
+
+        let onAllowedGuestPage = false;
+        if (currentPath.endsWith(loginPathSuffix) && currentPath === loginPathSuffix) { // Explicitly check for root
+            onAllowedGuestPage = true;
         } else {
-            // User is verified
-            // If on /verify or any auth page, redirect to /home
-            if (
-                window.location.pathname === "/verify" ||
-                ["/", "/register", "/forgot_pass"].includes(window.location.pathname)
-            ) {
-                window.location.href = "/home";
+            for (const suffix of allowedGuestSuffixes) {
+                if (currentPath.endsWith(suffix)) {
+                     // Basic check, ensure it's a full match for the suffix part
+                    if (currentPath === suffix || currentPath.endsWith(suffix)) {
+                        onAllowedGuestPage = true;
+                        break;
+                    }
+                }
             }
         }
-    } else {
-        console.log("User is not logged in");
-        // If not on an auth page, redirect to /
-        if (!["/", "/register", "/forgot_pass"].includes(window.location.pathname)) {
-            window.location.href = "/";
+
+        if (!onAllowedGuestPage) {
+            console.log(`Login_status.js: User not logged in. Current path ${currentPath}. Redirecting to login page (${loginPathSuffix}).`);
+            window.location.href = loginPathSuffix; // Redirect to login page
         }
     }
 });
