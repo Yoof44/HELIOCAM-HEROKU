@@ -67,7 +67,6 @@
                                     type="text" 
                                     id="fname" 
                                     name="fname" 
-                                    value="aaa"
                                     placeholder="Please type your full name..." 
                                     class="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                                 >
@@ -84,7 +83,6 @@
                                     type="text" 
                                     id="uname" 
                                     name="uname" 
-                                    value="bbb"
                                     placeholder="Please type your username..." 
                                     class="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                                 >
@@ -101,7 +99,6 @@
                                     type="text" 
                                     id="contact" 
                                     name="contact" 
-                                    value="123"
                                     placeholder="Please type your contact #..." 
                                     class="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                                 >
@@ -118,7 +115,6 @@
                                     type="email" 
                                     id="email" 
                                     name="email" 
-                                    value="iisakki331@gmail.com"
                                     placeholder="Please type your email address..." 
                                     class="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                                 >
@@ -135,7 +131,6 @@
                                     type="password" 
                                     id="password" 
                                     name="password" 
-                                    value="facade12"
                                     placeholder="Please type your password..." 
                                     class="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                                 >
@@ -152,7 +147,6 @@
                                     type="password" 
                                     id="con_pass" 
                                     name="con_pass" 
-                                    value="facade12"
                                     placeholder="Please confirm your password..." 
                                     class="w-full pl-10 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                                 >

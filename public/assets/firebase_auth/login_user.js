@@ -29,12 +29,27 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const password = document.getElementById("password").value;
 
     try {
-        const auth = getAuth();
-        await signInWithEmailAndPassword(auth, email, password);
-        
-        window.location.href = "/home";
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (user && !user.emailVerified) {
+            alert("Your email is not verified. Please check your email and verify your account before logging in.");
+            // Optionally, sign out the user if you don't want them to be in a partially logged-in state
+            // await signOut(auth); // You'll need to import signOut from firebase/auth
+        } else if (user && user.emailVerified) {
+            window.location.href = "/home";
+        } else {
+            // This case should ideally not be reached if signInWithEmailAndPassword was successful
+            alert("Login failed. Please try again.");
+        }
     } catch (error) {
-        alert("Login failed: " + error.message);
+        if (error.code === 'auth/user-not-found') {
+            alert("Login failed: No account found with this email address.");
+        } else if (error.code === 'auth/wrong-password') {
+            alert("Login failed: Incorrect password.");
+        } else {
+            alert("Login failed: " + error.message);
+        }
     } finally {
         loginBtn.disabled = false;
         loginText.style.display = "inline";
