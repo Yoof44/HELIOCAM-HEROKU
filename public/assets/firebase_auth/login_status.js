@@ -121,9 +121,12 @@ onAuthStateChanged(auth, async (user) => {
                 sessionStorage.removeItem('justRegistered'); // Clear the flag
             } else {
                 // User is logged in, email not verified, and it's NOT the "just registered on register page" scenario.
-                console.log(`Login_status.js: User logged in, email not verified (${user.email}). Redirecting to /login.php.`);
-                alert("Your email is not verified. Please check your email to verify your account before logging in.");
-                window.location.href = "/login.php"; // Redirect to login.php
+                // Per user request, do not redirect to /verify.php or any verification page.
+                // They remain on the current page.
+                // A site-wide banner for "email not verified" could be implemented separately if needed.
+                if (!currentPath.endsWith(verifyPathSuffix) && !currentPath.endsWith(verifyPhpPathSuffix)) {
+                    console.log(`Login_status.js: User logged in, email not verified (${user.email}). Current page: ${currentPath}. Not redirecting to a verify page.`);
+                }
             }
         } else { // User IS emailVerified
             sessionStorage.removeItem('justRegistered'); // Clean up flag if it exists
