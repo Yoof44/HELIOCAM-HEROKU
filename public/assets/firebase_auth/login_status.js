@@ -127,7 +127,7 @@ onAuthStateChanged(auth, async (user) => {
                 if (!currentPath.endsWith(verifyPathSuffix) && !currentPath.endsWith(verifyPhpPathSuffix)) {
                     console.log(`Login_status.js: User logged in, email not verified (${user.email}). Current page: ${currentPath}. Not redirecting to a verify page.`);
                     alert("Your email is not verified. Please check your email to verify your account.");
-    window.location.href = "/login.php"; // Redirect to login.php
+                    window.location.href = "/"; // Redirect to login.php
                 }
             }
         } else { // User IS emailVerified
