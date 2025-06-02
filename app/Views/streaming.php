@@ -67,14 +67,6 @@
                             <i class="fas fa-cog"></i>
                         </button>
                     </div>
-                    <div class="flex space-x-2">
-                        <button onclick="zoomOut(1)" class="p-2 bg-black bg-opacity-60 rounded-full text-white hover:bg-gray-800">
-                            <i class="fas fa-search-minus"></i>
-                        </button>
-                        <button onclick="zoomIn(1)" class="p-2 bg-black bg-opacity-60 rounded-full text-white hover:bg-gray-800">
-                            <i class="fas fa-search-plus"></i>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -95,14 +87,6 @@
                     <div id="camera_timestamp_2" class="text-sm text-gray-300">--:--:--</div>
                     <div id="camera_number_2" class="text-md text-white px-2 py-1 bg-black bg-opacity-50 rounded">Camera 2</div>
                 </div>
-                <div class="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2">
-                    <button onclick="zoomIn(2)" class="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-gray-800">
-                        <i class="fas fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button onclick="zoomOut(2)" class="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-gray-800">
-                        <i class="fas fa-magnifying-glass-minus"></i>
-                    </button>
-                </div>
             </div>
         </div>
         
@@ -121,14 +105,6 @@
                 <div class="absolute top-0 left-0 right-0 p-4 flex justify-between items-center">
                     <div id="camera_timestamp_3" class="text-sm text-gray-300">--:--:--</div>
                     <div id="camera_number_3" class="text-md text-white px-2 py-1 bg-black bg-opacity-50 rounded">Camera 3</div>
-                </div>
-                <div class="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2">
-                    <button onclick="zoomIn(3)" class="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-gray-800">
-                        <i class="fas fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button onclick="zoomOut(3)" class="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-gray-800">
-                        <i class="fas fa-magnifying-glass-minus"></i>
-                    </button>
                 </div>
             </div>
         </div>
@@ -149,14 +125,6 @@
                     <div id="camera_timestamp_4" class="text-sm text-gray-300">--:--:--</div>
                     <div id="camera_number_4" class="text-md text-white px-2 py-1 bg-black bg-opacity-50 rounded">Camera 4</div>
                 </div>
-                <div class="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2">
-                    <button onclick="zoomIn(4)" class="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-gray-800">
-                        <i class="fas fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button onclick="zoomOut(4)" class="p-2 bg-black bg-opacity-50 rounded-full text-white hover:bg-gray-800">
-                        <i class="fas fa-magnifying-glass-minus"></i>
-                    </button>
-                </div>
             </div>
         </div>
         
@@ -175,9 +143,6 @@
         </button>
         <button id="microphone_button" class="control-button bg-[#404040] text-white hover:bg-[#505050] hover:text-[#ff6600]">
             <i class="fas fa-microphone"></i>
-        </button>
-        <button id="record_button" class="control-button bg-[#404040] text-red-500 hover:bg-[#505050] hover:text-red-600">
-            <i class="fas fa-circle"></i>
         </button>
         <button id="volume_button" class="control-button bg-[#404040] text-white hover:bg-[#505050] hover:text-[#ff6600]">
             <i class="fas fa-volume-up"></i>
@@ -276,8 +241,8 @@
             <hr class="w-full border-gray-500 my-3">
             <div class="w-full h-auto">
                 <div class="mt-3">
-                    <label for="zoomSlider" class="text-gray-300" id="zoomValueLabel">Zoom: 1.0x</label>
-                    <input type="range" class="w-full bg-gray-700" id="zoomSlider" min="1" max="3" step="0.1" value="1">
+                    <label for="zoomSlider" class="text-gray-300" id="zoomValueLabel">Zoom: N/A</label>
+                    <input type="range" class="w-full bg-gray-700" id="zoomSlider" min="1" max="3" step="0.1" value="1" disabled>
                 </div>
                 
                 <div class="mt-4">
@@ -468,8 +433,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedCameraId = 1;
     let activeCamerasCount = 0;
     let totalConnectedCameras = 0;
-    let isFullscreen = false;
+    let isFullscreen = false; // Tracks browser fullscreen state
     let sessionPasskey = '<?= $passkey ?? "UNKNWN" ?>';
+    let isMuted = false; // For the main volume/mute button
     
     // Get session name and set title
     const urlParams = new URLSearchParams(window.location.search);
@@ -493,8 +459,75 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('closeJoinRequestBtn').addEventListener('click', hideJoinRequestDialog);
     document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
     document.getElementById('disconnectCameraBtn').addEventListener('click', disconnectSelectedCamera);
-    document.getElementById('record_button').addEventListener('click', toggleRecording);
     document.getElementById('volume_button').addEventListener('click', toggleVolume);
+    
+    // --- Fullscreen Helper Functions ---
+    function enterBrowserFullscreen() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen().catch(err => console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`));
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) { /* Firefox */
+            elem.mozRequestFullScreen();
+        } else if (elem.msRequestFullscreen) { /* IE/Edge */
+            elem.msRequestFullscreen();
+        }
+    }
+
+    function exitBrowserFullscreen() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => console.error(`Error attempting to disable full-screen mode: ${err.message} (${err.name})`));
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        }
+    }
+    // --- End Fullscreen Helper Functions ---
+
+    // --- Re-added End Session Button Logic ---
+    document.getElementById('end_session_button').addEventListener('click', function() {
+        const confirmDialog = document.createElement('div');
+        confirmDialog.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50';
+        confirmDialog.innerHTML = `
+            <div class="bg-gray-800 rounded-lg shadow-lg p-6 max-w-sm mx-auto">
+                <h3 class="text-xl font-bold mb-4 text-white">End Session</h3>
+                <p class="text-gray-300 mb-6">Are you sure you want to end this session? All connections will be terminated.</p>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelEndSession" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">
+                        Cancel
+                    </button>
+                    <button id="confirmEndSession" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                        End Session
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(confirmDialog);
+        
+        document.getElementById('cancelEndSession').onclick = () => {
+            confirmDialog.remove();
+        };
+        
+        document.getElementById('confirmEndSession').onclick = () => {
+            if (window.endSession) { // This calls the function in host_stream.js
+                window.endSession();
+            } else {
+                showToast('info', 'Ending session (fallback)...');
+                setTimeout(() => {
+                    window.location.href = "<?= site_url('/dashboard') ?>"; // Fallback redirect
+                }, 1000);
+            }
+            confirmDialog.remove();
+        };
+    });
+    // --- End of Re-added End Session Button Logic ---
     
     // Add settings button to each camera
     for (let i = 1; i <= 4; i++) {
@@ -507,125 +540,6 @@ document.addEventListener('DOMContentLoaded', function() {
             openSettings(i);
         };
         container.querySelector('.video-container').appendChild(settingsBtn);
-    }
-    
-    // Recording functionality
-    let isRecording = false;
-    let recordingStartTime = null;
-    let recordingTimer = null;
-    
-    function toggleRecording() {
-        const recordButton = document.getElementById('record_button');
-        isRecording = !isRecording;
-        
-        if (isRecording) {
-            // Start recording
-            recordButton.classList.add('text-red-600');
-            recordButton.classList.add('animate-pulse');
-            showToast('info', 'Recording started');
-            
-            // Add recording indicator
-            const recordingIndicator = document.createElement('div');
-            recordingIndicator.id = 'recording_indicator';
-            recordingIndicator.className = 'fixed top-16 left-4 bg-red-600 text-white px-3 py-1 rounded-full flex items-center z-20';
-            recordingIndicator.innerHTML = '<i class="fas fa-circle text-xs mr-2 animate-pulse"></i> <span id="recording_time">00:00</span>';
-            document.body.appendChild(recordingIndicator);
-            
-            // Start timer
-            recordingStartTime = new Date();
-            recordingTimer = setInterval(updateRecordingTime, 1000);
-            
-            // Call external recording function if available
-            if (window.startRecording) window.startRecording();
-        } else {
-            // Stop recording
-            recordButton.classList.remove('text-red-600');
-            recordButton.classList.remove('animate-pulse');
-            showToast('success', 'Recording saved');
-            
-            // Remove recording indicator
-            const indicator = document.getElementById('recording_indicator');
-            if (indicator) indicator.remove();
-            
-            // Clear timer
-            clearInterval(recordingTimer);
-            
-            // Call external recording function if available
-            if (window.stopRecording) window.stopRecording();
-        }
-    }
-    
-    function updateRecordingTime() {
-        if (!recordingStartTime) return;
-        
-        const now = new Date();
-        const diff = Math.floor((now - recordingStartTime) / 1000);
-        const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
-        const seconds = (diff % 60).toString().padStart(2, '0');
-        
-        const timeDisplay = document.getElementById('recording_time');
-        if (timeDisplay) {
-            timeDisplay.textContent = `${minutes}:${seconds}`;
-        }
-    }
-    
-    // Volume control
-    let isMuted = false;
-    function toggleVolume() {
-        const volumeButton = document.getElementById('volume_button');
-        isMuted = !isMuted;
-        
-        if (isMuted) {
-            volumeButton.querySelector('i').classList.remove('fa-volume-up');
-            volumeButton.querySelector('i').classList.add('fa-volume-mute');
-            // Mute all videos
-            for (let i = 1; i <= 4; i++) {
-                const video = document.getElementById(`remoteVideo${i}`);
-                if (video) video.muted = true;
-            }
-            showToast('info', 'Audio muted');
-        } else {
-            volumeButton.querySelector('i').classList.remove('fa-volume-mute');
-            volumeButton.querySelector('i').classList.add('fa-volume-up');
-            // Unmute all videos
-            for (let i = 1; i <= 4; i++) {
-                const video = document.getElementById(`remoteVideo${i}`);
-                if (video) video.muted = false;
-            }
-            showToast('info', 'Audio unmuted');
-        }
-    }
-    
-    // Make the session passkey functionality more robust
-    function copySessionPasskey() {
-        // Get passkey from the display element
-        const passkeyElement = document.getElementById('sessionPasskeyDisplay');
-        const passkey = passkeyElement ? passkeyElement.textContent.trim() : sessionPasskey;
-        
-        if (!passkey || passkey === 'Loading...' || passkey === 'UNKNWN') {
-            showToast('error', 'Session code not available');
-            return;
-        }
-        
-        // Use the Clipboard API
-        navigator.clipboard.writeText(passkey)
-            .then(() => {
-                showToast('success', 'Session code copied to clipboard');
-                
-                // Visual feedback on the button
-                const copyBtn = document.getElementById('copySessionBtn');
-                copyBtn.classList.add('bg-green-600');
-                copyBtn.innerHTML = '<i class="fas fa-check mr-2"></i> Copied!';
-                
-                setTimeout(() => {
-                    copyBtn.classList.remove('bg-green-600');
-                    copyBtn.innerHTML = '<i class="fas fa-copy mr-2"></i> Copy Session Code';
-                }, 2000);
-            })
-            .catch(err => {
-                console.error('Could not copy text: ', err);
-                showToast('error', 'Failed to copy session code');
-            });
     }
     
     // Function to toggle audio mute
@@ -790,34 +704,23 @@ document.addEventListener('DOMContentLoaded', function() {
         focusedCamera = cameraIndex;
         updateGridLayout(activeCamerasCount);
         
-        // Add focus mode indicator
         let indicator = document.getElementById('focus_mode_indicator');
         if (!indicator) {
             indicator = document.createElement('div');
             indicator.id = 'focus_mode_indicator';
             indicator.className = 'focus-mode-indicator';
-            indicator.innerHTML = '<i class="fas fa-expand-alt mr-2"></i> Focus Mode';
             document.body.appendChild(indicator);
         }
-        
-        // Update camera class for highlight effect
-        document.getElementById(`feed_container_${cameraIndex + 1}`).classList.add('border-orange-500');
-        document.getElementById(`feed_container_${cameraIndex + 1}`).classList.add('shadow-lg');
+        indicator.innerHTML = `<i class="fas fa-eye mr-2"></i> Camera ${cameraIndex + 1} Focused`; // Changed icon for focus
+        updateViewToggleIcon();
     }
     
     function exitFocusMode() {
-        // Remove focus highlight
-        if (focusedCamera !== -1) {
-            document.getElementById(`feed_container_${focusedCamera + 1}`).classList.remove('border-orange-500');
-            document.getElementById(`feed_container_${focusedCamera + 1}`).classList.remove('shadow-lg');
-        }
-        
         focusedCamera = -1;
         updateGridLayout(activeCamerasCount);
-        
-        // Remove indicator
         const indicator = document.getElementById('focus_mode_indicator');
         if (indicator) indicator.remove();
+        updateViewToggleIcon();
     }
     
     function showFocusHint() {
@@ -849,22 +752,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function toggleView() {
-        // This now toggles between grid and one-camera-at-a-time view
-        const cameraGrid = document.getElementById('grid_layout');
-        
-        if (focusedCamera !== -1) {
-            // If in focus mode, exit to grid
-            exitFocusMode();
-        } else {
-            // Otherwise, focus on first active camera
+        if (focusedCamera !== -1) { // Currently in focus mode, so exit to grid
+            exitFocusMode(); // Handles visual layout change first
+            if (isFullscreen) { // If browser is fullscreen, attempt to exit it
+                exitBrowserFullscreen();
+            }
+            // Actual isFullscreen state update will be handled by the 'fullscreenchange' event listener
+        } else { // Currently in grid mode, so enter focus & fullscreen
+            let firstActiveCameraIndex = -1;
             for (let i = 0; i < 4; i++) {
                 if (cameras[i+1].connected) {
-                    enterFocusMode(i);
+                    firstActiveCameraIndex = i;
                     break;
                 }
             }
+            if (firstActiveCameraIndex !== -1) {
+                enterFocusMode(firstActiveCameraIndex); // Handles visual layout change first
+                enterBrowserFullscreen();
+                // Actual isFullscreen state update will be handled by the 'fullscreenchange' event listener
+            } else {
+                showToast('info', 'No active cameras to focus on.');
+            }
         }
-        updateViewToggleIcon();
+        // updateViewToggleIcon() is called by enterFocusMode/exitFocusMode and handleFullscreenChange
+    }
+    
+    function updateViewToggleIcon() {
+        const viewToggleBtn = document.getElementById('view_toggle');
+        if (!viewToggleBtn) return;
+
+        // The icon should primarily reflect ability to enter/exit focus+fullscreen combo
+        if (focusedCamera !== -1 || isFullscreen) { 
+            viewToggleBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>'; 
+            viewToggleBtn.title = 'Exit Fullscreen & Focus Mode';
+        } else { 
+            viewToggleBtn.innerHTML = '<i class="fas fa-expand-arrows-alt"></i>'; 
+            viewToggleBtn.title = 'Enter Fullscreen & Focus Mode';
+        }
     }
     
     function showEndSessionConfirmation() {
@@ -979,56 +903,36 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('sessionInfoPanel').classList.add('hidden');
     }
     
-    function setZoom(cameraId, zoomValue) {
-        cameras[cameraId].zoom = zoomValue;
-        const video = document.getElementById(`remoteVideo${cameraId}`);
-        if (video) {
-            video.style.transform = `scale(${zoomValue})`;
+    function copySessionPasskey() {
+        // Get passkey from the display element
+        const passkeyDisplay = document.getElementById('sessionPasskeyDisplay');
+        if (passkeyDisplay) {
+            const passkey = passkeyDisplay.textContent.trim();
+            if (passkey && passkey !== 'Loading...' && passkey !== 'UNKNWN') {
+                // Copy passkey to clipboard
+                const tempInput = document.createElement('input');
+                tempInput.value = passkey;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                
+                showToast('success', 'Session code copied to clipboard');
+            } else {
+                showToast('error', 'Session code not available for copying');
+            }
         }
-    }
-    
-    function zoomIn(cameraId) {
-        if (!cameras[cameraId].connected) return;
-        
-        const newZoom = Math.min(cameras[cameraId].zoom + 0.1, 3.0);
-        setZoom(cameraId, newZoom);
-        showZoomIndicator(cameraId, newZoom);
-    }
-    
-    function zoomOut(cameraId) {
-        if (!cameras[cameraId].connected) return;
-        
-        const newZoom = Math.max(cameras[cameraId].zoom - 0.1, 1.0);
-        setZoom(cameraId, newZoom);
-        showZoomIndicator(cameraId, newZoom);
-    }
-    
-    function showZoomIndicator(cameraId, zoomValue) {
-        const container = document.getElementById(`feed_container_${cameraId}`);
-        let indicator = container.querySelector('.zoom-indicator');
-        
-        if (!indicator) {
-            indicator = document.createElement('div');
-            indicator.className = 'absolute bottom-24 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-3 py-1 rounded transition-opacity duration-300';
-            indicator.style.zIndex = '15';
-            container.appendChild(indicator);
-        }
-        
-        indicator.textContent = `${zoomValue.toFixed(1)}x`;
-        indicator.style.opacity = '1';
-        
-        setTimeout(() => {
-            indicator.style.opacity = '0';
-        }, 1500);
     }
     
     function openSettings(cameraId) {
         selectedCameraId = cameraId;
-        
-        // Update zoom slider value
-        document.getElementById('zoomSlider').value = cameras[cameraId].zoom;
-        document.getElementById('zoomValueLabel').textContent = `Zoom: ${cameras[cameraId].zoom.toFixed(1)}x`;
-        
+
+        // Update zoom slider value - adjust to show zoom is not available
+        const zoomValueLabel = document.getElementById('zoomValueLabel');
+        const zoomSlider = document.getElementById('zoomSlider');
+        if (zoomValueLabel) zoomValueLabel.textContent = "Zoom: N/A";
+        if (zoomSlider) zoomSlider.disabled = true;
+
         // Update camera info
         const infoElement = document.getElementById('cameraDeviceInfo');
         const disconnectBtn = document.getElementById('disconnectCameraBtn');
@@ -1040,13 +944,6 @@ document.addEventListener('DOMContentLoaded', function() {
             infoElement.textContent = 'No camera connected';
             disconnectBtn.disabled = true;
         }
-        
-        // Setup zoom slider event listener
-        document.getElementById('zoomSlider').oninput = function() {
-            const zoomValue = parseFloat(this.value);
-            setZoom(cameraId, zoomValue);
-            document.getElementById('zoomValueLabel').textContent = `Zoom: ${zoomValue.toFixed(1)}x`;
-        };
         
         // Show the modal
         document.getElementById('cameraSettingsModal').classList.remove('hidden');
@@ -1066,8 +963,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Update the showJoinRequestDialog function around line 801
-
     function showJoinRequestDialog() {
         document.getElementById('joinRequestDialog').classList.remove('hidden');
         
@@ -1137,8 +1032,6 @@ document.addEventListener('DOMContentLoaded', function() {
         requestsContainer.appendChild(requestItem);
     }
     
-    // Update the acceptJoinRequest function around line 831
-
     function acceptJoinRequest(requestId, email, deviceName = 'Unknown Device') {
         // Call the WebRTC function to accept join request
         if (window.acceptJoinRequest) {
@@ -1154,8 +1047,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast('info', 'Request rejected');
     }
     
-    // Update the showParticipantListDialog function
-
     function showParticipantListDialog() {
         document.getElementById('participantListDialog').classList.remove('hidden');
         
@@ -1391,19 +1282,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the view toggle button with the correct icon
     updateViewToggleIcon();
     
-    function updateViewToggleIcon() {
-        const viewToggleBtn = document.getElementById('view_toggle');
-        if (focusedCamera === -1) {
-            viewToggleBtn.innerHTML = '<i class="fas fa-expand"></i>';
-            viewToggleBtn.title = 'Enter Focus Mode';
-        } else {
-            viewToggleBtn.innerHTML = '<i class="fas fa-th-large"></i>';
-            viewToggleBtn.title = 'Exit Focus Mode';
-        }
-    }
-
-    // Add this helper function after the updateGridLayout function (around line 604)
-
     function updateGridPositioning() {
         // Get the actual width and height of the grid
         const gridWidth = document.getElementById('grid_layout').offsetWidth - 16; // Account for 8px margins
@@ -1455,8 +1333,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', updateGridPositioning);
     }
 
-    // Add this function after the showZoomIndicator function (around line 734)
-
     function updateCameraControlsPosition() {
         // For each camera container, adjust the control positions based on the current layout
         for (let i = 1; i <= 4; i++) {
@@ -1504,217 +1380,75 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial timestamp update
     updateAllTimestamps();
 
-    // Add this right after the DOMContentLoaded event start (around line 462)
+    // --- Start of Corrected Session Info Panel Logic ---
+    const sessionInfoBtn = document.getElementById('session_info_btn');
+    const closeInfoPanelBtn = document.getElementById('closeInfoPanelBtn');
+    const sessionInfoPanel = document.getElementById('sessionInfoPanel');
 
-    // Ensure the end session button is properly connected
-    document.getElementById('end_session_button').addEventListener('click', function() {
-        // Create confirmation dialog
-        const confirmDialog = document.createElement('div');
-        confirmDialog.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50';
-        confirmDialog.innerHTML = `
-            <div class="bg-gray-800 rounded-lg shadow-lg p-6 max-w-sm mx-auto">
-                <h3 class="text-xl font-bold mb-4 text-white">End Session</h3>
-                <p class="text-gray-300 mb-6">Are you sure you want to end this session? All connections will be terminated.</p>
-                <div class="flex justify-end space-x-3">
-                    <button id="cancelEndSession" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600">
-                        Cancel
-                    </button>
-                    <button id="confirmEndSession" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                        End Session
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(confirmDialog);
-        
-        document.getElementById('cancelEndSession').onclick = () => {
-            confirmDialog.remove();
-        };
-        
-        document.getElementById('confirmEndSession').onclick = () => {
-            // Call the WebRTC endSession function if available
-            if (window.endSession) {
-                window.endSession();
-            } else {
-                // Fallback if WebRTC function isn't available
-                showToast('info', 'Ending session...');
-                setTimeout(() => {
-                    window.location.href = "<?= site_url('/dashboard') ?>";
-                }, 1000);
+    if (sessionInfoBtn && closeInfoPanelBtn && sessionInfoPanel) {
+        sessionInfoBtn.addEventListener('click', function() {
+            sessionInfoPanel.classList.remove('hidden');
+            // Ensure panel is styled to be visible (Tailwind's 'hidden' usually sets display:none)
+            // The following direct style changes are for robustness if class toggling is not enough
+            sessionInfoPanel.style.display = 'block'; // Or 'flex' depending on its layout
+            sessionInfoPanel.style.opacity = '1';
+            sessionInfoPanel.style.transform = 'scale(1)';
+            
+            const passkeyDisplay = document.getElementById('sessionPasskeyDisplay');
+            if (passkeyDisplay) {
+                passkeyDisplay.style.backgroundColor = '#ff6600';
+                passkeyDisplay.style.color = 'white';
+                passkeyDisplay.style.padding = '8px 12px';
+                passkeyDisplay.style.borderRadius = '4px';
+                passkeyDisplay.style.boxShadow = '0 0 10px rgba(255, 102, 0, 0.5)';
             }
-            confirmDialog.remove();
-        };
-    });
-});
+        });
 
-// Simplest version - just show/hide without animations
-document.getElementById('session_info_btn').onclick = function() {
-    // Get the panel
-    const panel = document.getElementById('sessionInfoPanel');
-    
-    // Simply remove the hidden class to show it
-    panel.classList.remove('hidden');
-    
-    // Basic styling without animations
-    panel.style.opacity = '1';
-    panel.style.transform = 'none';
-    
-    // Highlight the passkey with a simple color change
-    const passkeyDisplay = document.getElementById('sessionPasskeyDisplay');
-    if (passkeyDisplay) {
-        passkeyDisplay.style.background = '#ff6600';
-        passkeyDisplay.style.color = 'white';
-        passkeyDisplay.style.padding = '8px 12px';
-        passkeyDisplay.style.borderRadius = '4px';
+        closeInfoPanelBtn.addEventListener('click', function() {
+            sessionInfoPanel.style.opacity = '0';
+            sessionInfoPanel.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                sessionInfoPanel.classList.add('hidden');
+                sessionInfoPanel.style.display = ''; // Reset display style if 'hidden' class handles it
+            }, 200);
+        });
+    } else {
+        console.error('Session info panel buttons or panel itself not found!');
     }
-};
+    // --- End of Corrected Session Info Panel Logic ---
 
-// Make close button work too - simple version
-document.getElementById('closeInfoPanelBtn').onclick = function() {
-    // Just add the hidden class back
-    const panel = document.getElementById('sessionInfoPanel');
-    panel.classList.add('hidden');
-};
+    // Volume control (re-added)
+    function toggleVolume() {
+        const volumeButton = document.getElementById('volume_button');
+        isMuted = !isMuted;
+        
+        if (isMuted) {
+            volumeButton.querySelector('i').classList.remove('fa-volume-up');
+            volumeButton.querySelector('i').classList.add('fa-volume-mute');
+            for (let i = 1; i <= 4; i++) {
+                const video = document.getElementById(`remoteVideo${i}`);
+                if (video) video.muted = true;
+            }
+            showToast('info', 'All incoming audio muted');
+        } else {
+            volumeButton.querySelector('i').classList.remove('fa-volume-mute');
+            volumeButton.querySelector('i').classList.add('fa-volume-up');
+            for (let i = 1; i <= 4; i++) {
+                const video = document.getElementById(`remoteVideo${i}`);
+                if (video) video.muted = false;
+            }
+            showToast('info', 'All incoming audio unmuted');
+        }
+    }
+
+}); // This closes the main DOMContentLoaded listener
+
+// All other script tags and their content below this main script block should be removed
+// if they solely deal with the session info panel, as it's now handled above.
 </script>
 
 <script type="module" src="<?= base_url('/assets/firebase_auth/login_status.js'); ?>"></script>
 <script type="module" src="<?= base_url('/assets/firebase_webrtc/host_stream.js'); ?>"></script>
-
-<!-- Add this script block right before the closing </body> tag -->
-
-<script>
-// Direct script to ensure session info panel works
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the elements once
-    const sessionInfoBtn = document.getElementById('session_info_btn');
-    const closeInfoPanelBtn = document.getElementById('closeInfoPanelBtn');
-    const panel = document.getElementById('sessionInfoPanel');
-    
-    if (!sessionInfoBtn || !panel || !closeInfoPanelBtn) {
-        console.error('Required elements not found!', { 
-            button: !!sessionInfoBtn, 
-            panel: !!panel, 
-            closeBtn: !!closeInfoPanelBtn 
-        });
-        return;
-    }
-    
-    // Remove any existing click handlers (important!)
-    sessionInfoBtn.onclick = null;
-    closeInfoPanelBtn.onclick = null;
-    
-    // Add new, simple handlers
-    sessionInfoBtn.addEventListener('click', function() {
-        console.log('Session info button clicked');
-        panel.classList.remove('hidden');
-        
-        // Highlight the passkey
-        const passkeyDisplay = document.getElementById('sessionPasskeyDisplay');
-        if (passkeyDisplay) {
-            passkeyDisplay.style.backgroundColor = '#ff6600';
-            passkeyDisplay.style.color = 'white';
-            passkeyDisplay.style.padding = '8px';
-            passkeyDisplay.style.borderRadius = '4px';
-        }
-    });
-    
-    closeInfoPanelBtn.addEventListener('click', function() {
-        console.log('Close info panel button clicked');
-        panel.classList.add('hidden');
-    });
-
-    console.log('Session info panel handlers initialized');
-});
-</script>
-
-<script>
-// Direct fix for session info button - will run after all other scripts
-window.addEventListener('load', function() {
-    console.log('Window loaded, fixing session info button');
-    
-    // Get direct references to the elements
-    const sessionInfoBtn = document.querySelector('button#session_info_btn');
-    const sessionInfoPanel = document.getElementById('sessionInfoPanel');
-    const closeInfoPanelBtn = document.getElementById('closeInfoPanelBtn');
-    
-    // Debug check - log if elements are found
-    console.log('Elements found:', { 
-        button: sessionInfoBtn, 
-        panel: sessionInfoPanel, 
-        closeBtn: closeInfoPanelBtn 
-    });
-    
-    if (sessionInfoBtn) {
-        // Simply override the onclick handler instead of trying to remove listeners
-        sessionInfoBtn.onclick = function(e) {
-            console.log('Session info button clicked!');
-            
-            // Show panel directly without animations
-            if (sessionInfoPanel) {
-                sessionInfoPanel.classList.remove('hidden');
-                sessionInfoPanel.style.display = 'block';
-                
-                // Highlight passkey for visibility
-                const passkeyDisplay = document.getElementById('sessionPasskeyDisplay');
-                if (passkeyDisplay) {
-                    passkeyDisplay.style.backgroundColor = '#ff6600';
-                    passkeyDisplay.style.color = 'white';
-                    passkeyDisplay.style.padding = '8px';
-                    passkeyDisplay.style.borderRadius = '4px';
-                    passkeyDisplay.style.boxShadow = '0 0 15px rgba(255, 102, 0, 0.6)';
-                }
-                
-                console.log('Panel should now be visible');
-            } else {
-                console.error('Session info panel element not found!');
-            }
-        };
-    }
-    
-    // Fix close button too
-    if (closeInfoPanelBtn) {
-        closeInfoPanelBtn.onclick = function() {
-            console.log('Close button clicked');
-            if (sessionInfoPanel) {
-                sessionInfoPanel.classList.add('hidden');
-            }
-        };
-    }
-    
-    console.log('Session info button handler installed');
-});
-</script>
-
-<script>
-// Add this function to the end of your host_stream.js file to fix the redirect URL
-
-// Update the endSession function in host_stream.js (around line 418)
-async function endSession() {
-    try {
-        // Close all peer connections
-        Object.values(peerConnections).forEach(pc => pc.close());
-        peerConnections = {};
-        
-        // Set session as inactive
-        await updateSessionStatus(false);
-        
-        // Show final toast message
-        showToast("success", "Session ended successfully");
-        
-        // Redirect to dashboard instead of /home
-        setTimeout(() => {
-            window.location.href = "/dashboard";
-        }, 1000);
-    } catch (error) {
-        console.error("Error ending session:", error);
-        // Fallback redirect if something goes wrong
-        setTimeout(() => {
-            window.location.href = "/dashboard";
-        }, 1000);
-    }
-}
-</script>
 
 </body>
 </html>

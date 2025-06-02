@@ -101,35 +101,6 @@ function initializeHost(user) {
     console.log("Setting up detection event listener for:", 
         `users/${formattedEmail}/sessions/${sessionId}/detection_events`);
     listenForDetectionEvents();
-    
-    // Debug the listener setup
-    setTimeout(() => {
-        console.log("Verifying detection event listener is active");
-        testDetectionEventListener();
-    }, 3000);
-}
-
-// Add this helper function
-function testDetectionEventListener() {
-    if (!formattedEmail || !sessionId) return;
-    
-    const testId = Date.now().toString();
-    const testPath = `users/${formattedEmail}/sessions/${sessionId}/detection_events/${testId}`;
-    
-    console.log(`Writing test event to: ${testPath}`);
-    
-    // Write a test event
-    set(ref(db, testPath), {
-        type: "test",
-        timestamp: Date.now(),
-        cameraNumber: 1,
-        deviceName: "Host Test",
-        email: userEmail
-    }).then(() => {
-        console.log("Test detection event written successfully");
-    }).catch(err => {
-        console.error("Failed to write test event:", err);
-    });
 }
 
 // Update session status (active/inactive)
@@ -159,6 +130,9 @@ function listenForJoinRequests() {
     
     const joinRequestsRef = ref(db, joinRequestsPath);
     
+    // Initialize pendingJoinRequests to empty array to prevent showing notifications for existing requests
+    pendingJoinRequests = [];
+    
     // Add a one-time value listener to check if there are any requests already
     get(joinRequestsRef).then((snapshot) => {
         if (snapshot.exists()) {
@@ -183,11 +157,25 @@ function listenForJoinRequests() {
             const deviceName = requestData.deviceName || 'Unknown Device';
             const uniqueRequestId = `${requestData.email}_${deviceId}`;
             
-            // Check if this request has already been processed using the unique identifier
-            const isProcessed = pendingJoinRequests.some(req => 
-                req.uniqueId === uniqueRequestId && req.id !== requestId);
+            // Check if this device is already connected as an active joiner
+            const isAlreadyActive = activeJoiners.some(joiner => 
+                joiner.email === requestData.email && joiner.deviceId === deviceId);
             
-            if (!isProcessed) {
+            if (isAlreadyActive) {
+                console.log(`Device ${deviceName} (${requestData.email}) is already connected, ignoring request`);
+                return;
+            }
+            
+            // Check if we already have a pending request from this device
+            const existingRequestIndex = pendingJoinRequests.findIndex(req => req.uniqueId === uniqueRequestId);
+            
+            if (existingRequestIndex >= 0) {
+                // Update the existing request with the new request ID
+                console.log(`Updating existing request for ${uniqueRequestId} with new ID ${requestId}`);
+                pendingJoinRequests[existingRequestIndex].id = requestId;
+                pendingJoinRequests[existingRequestIndex].timestamp = requestData.timestamp || Date.now();
+            } else {
+                // This is a new unique request
                 console.log("New join request:", requestId, requestData.email, deviceName);
                 
                 // Add to pending requests with device info
@@ -200,9 +188,6 @@ function listenForJoinRequests() {
                     timestamp: requestData.timestamp || Date.now()
                 });
                 
-                // Update notification count
-                updateNotificationCount();
-                
                 // Show notification
                 if (!ignoreJoinRequests) {
                     showToast("info", `Join request from ${requestData.email} (${deviceName})`);
@@ -214,9 +199,10 @@ function listenForJoinRequests() {
                         console.error("window.onJoinRequest is not defined");
                     }
                 }
-            } else {
-                console.log("Duplicate request detected, ignoring:", uniqueRequestId);
             }
+            
+            // Update notification count after processing the request
+            updateNotificationCount();
         } else {
             console.warn("Received invalid join request data:", requestData);
         }
@@ -225,12 +211,30 @@ function listenForJoinRequests() {
 
 // Update notification count
 function updateNotificationCount() {
-    const count = pendingJoinRequests.length;
+    // Deduplicate requests by uniqueId before counting
+    const uniqueRequests = [];
+    const uniqueIds = new Set();
+    
+    pendingJoinRequests.forEach(req => {
+        if (!uniqueIds.has(req.uniqueId)) {
+            uniqueIds.add(req.uniqueId);
+            uniqueRequests.push(req);
+        }
+    });
+    
+    const count = uniqueRequests.length;
     
     // Update notification count in UI
     const notificationCount = document.getElementById("notification_count");
     if (notificationCount) {
-        notificationCount.textContent = count;
+        // Only show count if there are actual pending requests
+        if (count > 0) {
+            notificationCount.textContent = count;
+            notificationCount.style.display = "inline";
+        } else {
+            notificationCount.textContent = "";
+            notificationCount.style.display = "none";
+        }
     }
     
     // Show/hide notification icon
@@ -238,6 +242,8 @@ function updateNotificationCount() {
     if (notificationIcon) {
         notificationIcon.classList.toggle("hidden", count === 0);
     }
+    
+    console.log(`Updated notification count: ${count} unique requests`);
 }
 
 // Accept a join request
@@ -265,10 +271,19 @@ async function acceptJoinRequest(requestId, email, deviceName = 'Unknown Device'
         const currentCount = snapshot.exists() ? snapshot.val() : 0;
         await set(joinersRef, currentCount + 1);
         
-        // Find and remove the request from pendingRequests using the unique ID
+        // Create unique identifier for this request
         const uniqueId = `${email}_${deviceId}`;
+        
+        // Remove ALL requests with this uniqueId from pendingRequests
         pendingJoinRequests = pendingJoinRequests.filter(req => req.uniqueId !== uniqueId);
         updateNotificationCount();
+        
+        // Check if this joiner is already active (prevent duplicates)
+        const existingJoiner = activeJoiners.find(j => j.email === email && j.deviceId === deviceId);
+        if (existingJoiner) {
+            console.log(`Joiner ${email} (${deviceName}) is already active as camera ${existingJoiner.cameraNumber}`);
+            return;
+        }
         
         // Add to active joiners array with camera number assignment and device info
         const cameraNumber = activeJoiners.length + 1;

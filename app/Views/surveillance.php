@@ -32,14 +32,6 @@
              id="camera1Container">
             <div class="w-full relative h-full video-container">
                 <video id="remoteVideo1" autoplay playsinline class="w-full h-full bg-black"></video>
-                <div class="flex flex-col text-gray-500 absolute right-0 w-auto p-5 m-3 top-1/2 gap-4">
-                    <button onclick="zoomIn(1)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button onclick="zoomOut(1)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-minus"></i>
-                    </button>
-                </div>
                 <div class="flex flex-row justify-between text-gray-500 absolute top-0 w-full p-5 m-3 items-center">
                     <div class="text-sm text-gray-300" id="timestamp1">--:--:--</div>
                     <div class="text-2x1">Camera 1</div>
@@ -79,14 +71,6 @@
              id="camera2Container">
             <div class="w-full relative h-full video-container">
                 <video id="remoteVideo2" autoplay playsinline class="w-full h-full bg-black"></video>
-                <div class="flex flex-col text-gray-500 absolute right-0 w-auto p-5 m-3 top-1/2 gap-4">
-                    <button onclick="zoomIn(2)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button onclick="zoomOut(2)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-minus"></i>
-                    </button>
-                </div>
                 <div class="flex flex-row justify-between text-gray-500 absolute top-0 w-full p-5 m-3 items-center">
                     <div class="text-sm text-gray-300" id="timestamp2">--:--:--</div>
                     <div class="text-2x1">Camera 2</div>
@@ -126,14 +110,6 @@
              id="camera3Container">
             <div class="w-full relative h-full video-container">
                 <video id="remoteVideo3" autoplay playsinline class="w-full h-full bg-black"></video>
-                <div class="flex flex-col text-gray-500 absolute right-0 w-auto p-5 m-3 top-1/2 gap-4">
-                    <button onclick="zoomIn(3)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button onclick="zoomOut(3)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-minus"></i>
-                    </button>
-                </div>
                 <div class="flex flex-row justify-between text-gray-500 absolute top-0 w-full p-5 m-3 items-center">
                     <div class="text-sm text-gray-300" id="timestamp3">--:--:--</div>
                     <div class="text-2x1">Camera 3</div>
@@ -173,14 +149,6 @@
              id="camera4Container">
             <div class="w-full relative h-full video-container">
                 <video id="remoteVideo4" autoplay playsinline class="w-full h-full bg-black"></video>
-                <div class="flex flex-col text-gray-500 absolute right-0 w-auto p-5 m-3 top-1/2 gap-4">
-                    <button onclick="zoomIn(4)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-plus"></i>
-                    </button>
-                    <button onclick="zoomOut(4)" class="border-none text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                        <i class="fas fa-magnifying-glass-minus"></i>
-                    </button>
-                </div>
                 <div class="flex flex-row justify-between text-gray-500 absolute top-0 w-full p-5 m-3 items-center">
                     <div class="text-sm text-gray-300" id="timestamp4">--:--:--</div>
                     <div class="text-2x1">Camera 4</div>
@@ -252,7 +220,7 @@
             <div class="flex flex-col bg-gray-800 rounded-lg shadow-lg p-4 w-1/3">
                 <div class="w-full flex flex-row justify-between items-center">
                     <h2 class="text-xl text-gray-200 font-semibold">Add Camera</h2>
-                    <button class="w-auto h-auto text-gray-100 p-2 hover:bg-gray-600 hover:text-orange-500 hover:rounded-full hover:p-2" id="close">
+                    <button class="w-auto h-auto text-gray-100 p-2 hover:bg-gray-600 hover:text-orange-500 hover:rounded-full hover:p-2" id="closePasskeyPopup">
                         <i class="fas fa-xmark"></i>
                     </button>
                 </div>
@@ -282,7 +250,7 @@
             <div class="flex flex-col bg-gray-800 rounded-lg shadow-lg p-4 w-1/3">
                 <div class="w-full flex flex-row justify-between items-center">
                     <h2 class="text-xl text-gray-200 font-semibold">Settings</h2>
-                    <button class="w-auto h-auto text-gray-100 p-2 hover:bg-gray-600 hover:text-orange-500 hover:rounded-full hover:p-2" id="close">
+                    <button class="w-auto h-auto text-gray-100 p-2 hover:bg-gray-600 hover:text-orange-500 hover:rounded-full hover:p-2" id="closeSettingsPopup">
                         <i class="fas fa-xmark"></i>
                     </button>
                 </div>
@@ -302,9 +270,6 @@
                             <i class="fas fa-sliders text-sm pr-2"></i>Quality
                         </li>
                         <li class="text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
-                            <i class="fas fa-record-vinyl text-sm pr-2"></i>Recording Settings
-                        </li>
-                        <li class="text-gray-500 text-md px-2.5 cursor-pointer hover:text-orange-500 hover:bg-gray-600 hover:rounded-full">
                             <i class="fas fa-bell text-sm pr-2"></i>Notification Settings
                         </li>
                     </ul>
@@ -318,12 +283,6 @@
     <div class="flex flex-row justify-center items-center p-6 gap-5 bg-[#2a2a2a] text-white bottom-0 z-1 w-full h-16">
         <button class="flex justify-center items-center bg-[#404040] rounded-full hover:bg-gray-500 hover:text-orange-500 px-2 py-3 mx-1 w-11 h-11" id="muteMic">
             <i class="fas fa-microphone"></i>
-        </button>
-        <button data-btn="Record" class="flex justify-center items-center text-red-600 bg-[#404040] hover:text-orange-700 rounded-full px-2 py-3 mx-1 w-11 h-11" id="recordButton">
-            <i class="fas fa-circle"></i>
-        </button>
-        <button data-btn="Volume" class="flex justify-center items-center bg-[#404040] rounded-full hover:bg-gray-500 hover:text-orange-500 px-2 py-3 mx-1 w-11 h-11" id="volumeButton">
-            <i class="fas fa-volume-up"></i>
         </button>
         <button data-btn="Multi-Camera" onclick="toggleView()" class="flex justify-center items-center bg-[#404040] rounded-full hover:bg-gray-500 hover:text-orange-500 px-2 py-3 mx-1 w-11 h-11" id="viewToggle">
             <i class="fab fa-microsoft"></i>
@@ -405,31 +364,13 @@ video {
     height: 100%;
     object-fit: contain; /* Changed from cover to contain */
     background: #000;
-    transition: transform 0.2s ease-out; /* Smooth zoom transition */
 }
-
 
 /* Portrait mode detection and handling */
 .portrait-mode video {
     max-height: 100%;
     max-width: 80%; /* Limit width for portrait videos */
     margin: 0 auto; /* Center horizontally */
-}
-
-/* Zoom indicator styling */
-.zoom-indicator {
-    position: absolute;
-    bottom: 120px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    transition: opacity 0.5s;
-    opacity: 0;
-    z-index: 10;
 }
 </style>
 
@@ -472,26 +413,39 @@ document.addEventListener('DOMContentLoaded', () => {
             firstCameraContainer.classList.remove('md:grid-cols-2', 'lg:grid-cols-2', 'xl:grid-cols-2');
         }
 
-
         // Disable adding cameras unless settingsPopup is opened
         const settingsButton = document.getElementById('settingsButton');
-        settingsButton.addEventListener('click', () => {
-            const settingsPopup = document.getElementById('settingsPopup');
-            if (settingsPopup) {
-                settingsPopup.style.display = 'flex';
-            }if (settingsButton) {
-                settingsButton.style.active = 'text-color=""'; // Hide settings button when popup is open
-            }
-
-            const closeBtn = document.getElementById('close');
-            closeBtn.addEventListener('click', () => {
-                settingsPopup.classList.remove('flex');
-                settingsPopup.classList.add('hidden');
+        if (settingsButton) {
+            settingsButton.addEventListener('click', () => {
+                const settingsPopup = document.getElementById('settingsPopup');
+                if (settingsPopup) {
+                    settingsPopup.style.display = 'flex';
+                }
             });
+        }
+        
+        // Fix for settings popup close button
+        const closeSettingsBtn = document.getElementById('closeSettingsPopup');
+        if (closeSettingsBtn) {
+            closeSettingsBtn.addEventListener('click', () => {
+                const settingsPopup = document.getElementById('settingsPopup');
+                if (settingsPopup) {
+                    settingsPopup.style.display = 'none';
+                }
+            });
+        }
+        
+        // Fix for passkey popup close button
+        const closePasskeyBtn = document.getElementById('closePasskeyPopup');
+        if (closePasskeyBtn) {
+            closePasskeyBtn.addEventListener('click', () => {
+                const passkeyPopup = document.getElementById('passkeyPopup');
+                if (passkeyPopup) {
+                    passkeyPopup.style.display = 'none';
+                }
+            });
+        }
 
-        });
- 
- 
     // Example for event delegation:
     document.getElementById('cameraGrid').addEventListener('click', (e) => {
         const exitBtn = e.target.closest('button');
@@ -555,7 +509,6 @@ function addCamera() {
     const removedContainer = document.getElementById('removedCameraContainer');
     const cameraGrid = document.getElementById('cameraGrid');
     const passkeyPopup = document.getElementById('passkeyPopup');
-    const closeBtn = document.getElementById('close');
     const addCameraBtn = document.getElementById('addCameraBtn');
     const passkeyInput = document.getElementById('passkey');
 
@@ -587,11 +540,6 @@ function addCamera() {
     // Show passkey popup before starting video stream
     passkeyPopup.style.display = 'flex';
 
-    // Close popup on close button click
-    closeBtn.addEventListener('click', () => {
-        passkeyPopup.style.display = 'none';
-    });
-
     // Add camera on valid passkey
     addCameraBtn.addEventListener('click', () => {
         const passkey = passkeyInput.value.trim();
@@ -610,65 +558,45 @@ function addCamera() {
 function startVideoStream(cameraId) {
     const videoElement = document.getElementById(`remoteVideo${cameraId}`);
     if (!videoElement) {
-        console.error(`Video element not found: remoteVideo${cameraId}`);
-        return;
-    }
+        console.error(`
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
-            videoElement.srcObject = stream;
-        })
-        .catch(err => {
-            console.error(`Error accessing camera ${cameraId}`, err);
-        });
-}
-
-function zoomIn(cameraId) {
-    const video = document.getElementById(`remoteVideo${cameraId}`);
-    if (!video) return;
-    cameras[cameraId].zoom = Math.min(cameras[cameraId].zoom + 0.1, 3);
-    video.style.transform = `scale(${cameras[cameraId].zoom})`;
-}
-
-function zoomOut(cameraId) {
-    const video = document.getElementById(`remoteVideo${cameraId}`);
-    if (!video) return;
-    cameras[cameraId].zoom = Math.max(cameras[cameraId].zoom - 0.1, 1.0);
-    video.style.transform = `scale(${cameras[cameraId].zoom})`;
-}
-
-function prevCamera(cameraId) {
-    // Implement camera cycling logic if needed
-    console.log(`Prev camera clicked for camera ${cameraId}`);
-}
-
-function nextCamera(cameraId) {
-    // Implement camera cycling logic if needed
-    console.log(`Next camera clicked for camera ${cameraId}`);
-}
-
-function checkNoCamerasMessage() {
-    const noCamerasMessage = document.getElementById('noCamerasMessage');
-    const anyActive = Object.values(cameras).some(cam => cam.active);
-    noCamerasMessage.style.display = anyActive ? 'none' : 'flex';
-}
-
-function updateTimestamps() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-
-    for (let i = 1; i <= 4; i++) {
-        const timestamp = document.getElementById(`timestamp${i}`);
-        if (timestamp) {
-            timestamp.textContent = timeString;
+// Add toggleView function
+function toggleView() {
+    console.log("Toggle view clicked");
+    // Implement grid view switching logic here
+    const cameraGrid = document.getElementById('cameraGrid');
+    const activeCameras = Object.entries(cameras).filter(([id, cam]) => cam.active);
+    
+    if (activeCameras.length > 1) {
+        // Toggle between single view and grid view
+        const isGridView = cameraGrid.classList.contains('md:grid-cols-2');
+        
+        if (isGridView) {
+            // Switch to single view (first active camera)
+            cameraGrid.classList.remove('md:grid-cols-2', 'lg:grid-cols-2', 'xl:grid-cols-2');
+            
+            // Hide all cameras except the first active one
+            const firstActiveId = activeCameras[0][0];
+            Object.keys(cameras).forEach(id => {
+                const container = document.getElementById(`camera${id}Container`);
+                if (container) {
+                    container.style.display = id === firstActiveId ? 'flex' : 'none';
+                }
+            });
+        } else {
+            // Switch to grid view
+            cameraGrid.classList.add('md:grid-cols-2', 'lg:grid-cols-2', 'xl:grid-cols-2');
+            
+            // Show all active cameras
+            Object.entries(cameras).forEach(([id, cam]) => {
+                const container = document.getElementById(`camera${id}Container`);
+                if (container) {
+                    container.style.display = cam.active ? 'flex' : 'none';
+                }
+            });
         }
     }
 }
-
-
 </script>
-
-
-
 </body>
 </html>
