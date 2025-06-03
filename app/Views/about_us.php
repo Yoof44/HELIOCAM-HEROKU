@@ -303,7 +303,7 @@
                             </div>
                         </div>
                         <div class="mt-6">
-                            <p class="text-gray-600 italic">"De eroplano de bangga sa cambal na bilding."</p>
+                            <p class="text-gray-600 italic">"It's all about the perspective :))."</p>
                         </div>
                         <div class="mt-4 flex space-x-3">
                             <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-linkedin"></i></a>
@@ -325,7 +325,7 @@
                             </div>
                         </div>
                         <div class="mt-6">
-                            <p class="text-gray-600 italic">"Lorem lorem lorem ipsum, phuno ng papaya."</p>
+                            <p class="text-gray-600 italic">"Keep Moving Forward"</p>
                         </div>
                         <div class="mt-4 flex space-x-3">
                             <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-linkedin"></i></a>
@@ -369,7 +369,7 @@
                             </div>
                         </div>
                         <div class="mt-6">
-                            <p class="text-gray-600 italic">"Expedita cupal tempora distinctio perferendis indio."</p>
+                            <p class="text-gray-600 italic">"Always stand stalwart, no matter how hard the fall is."</p>
                         </div>
                         <div class="mt-4 flex space-x-3">
                             <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-linkedin"></i></a>
@@ -391,7 +391,7 @@
                             </div>
                         </div>
                         <div class="mt-6">
-                            <p class="text-gray-600 italic">"Leit titia quas vitae, porque con de guo."</p>
+                            <p class="text-gray-600 italic">"Progress will fight to me."</p>
                         </div>
                         <div class="mt-4 flex space-x-3">
                             <a href="#" class="text-gray-400 hover:text-blue-500 transition"><i class="fab fa-linkedin"></i></a>
